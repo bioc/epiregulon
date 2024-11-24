@@ -88,7 +88,7 @@ calculateP2G <- function(peakMatrix = NULL,
         cor_method <- match.arg(cor_method)
         assignment_method <- match.arg(assignment_method)
         .validate_input_sce(expMatrix=expMatrix, exp_assay=exp_assay, peakMatrix=peakMatrix,
-                            peak_assay=peak_assay, env=environment())
+                            peak_assay=peak_assay, row.ranges=TRUE)
 
         if (!gene_symbol %in% colnames(rowData(expMatrix))) {
             stop("colData of expMatrix does not contain ", gene_symbol)

@@ -100,7 +100,7 @@ addWeights <- function(regulon,
     method <- match.arg(method)
     message("adding weights using ", method, "...")
     checkmate::assert_logical(tf_re.merge, len = 1)
-    .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay, tf_re.merge, env=environment())
+    .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay, tf_re.merge)
 
     if(!is.null(clusters)) .validate_clusters(clusters, expMatrix)
 
@@ -120,8 +120,6 @@ addWeights <- function(regulon,
 
     if(!is.null(peakMatrix)){
       peakMatrix <- assay(peakMatrix, peak_assay)
-      checkmate::testMultiClass(peakMatrix, c("matrix", "dgeMatrix", "lgCMatrix",
-                                              "dgCMatrix", "CsparseMatrix"))
     }
 
     if (method=="wilcoxon" & is.null(peakMatrix)) {
@@ -281,9 +279,7 @@ addWeights <- function(regulon,
         expMatrix <- assays(averages.se.exp)$average
 
         # remove genes whose expressions are NA for all pseudobulks
-        expMatrix <- expMatrix[!Matrix::rowSums(is.na(expMatrix)) == ncol(expMatrix),
-            ]
-
+        expMatrix <- expMatrix[!Matrix::rowSums(is.na(expMatrix)) == ncol(expMatrix), ]
 
         if (tf_re.merge) {
             averages.se.peak <- scuttle::sumCountsAcrossCells(peakMatrix, ids = groupings,

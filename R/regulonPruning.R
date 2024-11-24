@@ -116,7 +116,7 @@ pruneRegulon <- function(regulon,
                          cellNum = 10,
                          BPPARAM = BiocParallel::SerialParam(progressbar = TRUE)) {
     if(is.null(peakMatrix)) stop("peakMatrix should be provided")
-    .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay, env=environment())
+    .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay)
     if(!is.null(clusters)) .validate_clusters(clusters, expMatrix)
     # choose test method
     test <- match.arg(test)
@@ -128,17 +128,9 @@ pruneRegulon <- function(regulon,
     if (aggregateCells) .aggregateCells(cellNum, expMatrix, peakMatrix, environment(),
                                         useDim, exp_assay, peak_assay, BPPARAM, clusters)
 
-    # extracting assays from SE
-    if (checkmate::test_class(expMatrix, classes = "SummarizedExperiment")) {
-        expMatrix <- assay(expMatrix, exp_assay)
-    }
-
-    if (checkmate::test_class(peakMatrix, classes = "SummarizedExperiment")) {
-        peakMatrix <- assay(peakMatrix, peak_assay)
-    }
-
-    expMatrix <- as(expMatrix, "CsparseMatrix")
-    peakMatrix <- as(peakMatrix, "CsparseMatrix")
+    # extracting assays from SCE and coverting to SsparseMatrix
+    expMatrix <- as(assay(expMatrix, exp_assay),"CsparseMatrix")
+    peakMatrix <- as(assay(peakMatrix, peak_assay),"CsparseMatrix")
 
     .balance_check(peak_cutoff, exp_cutoff, peakMatrix, expMatrix)
 

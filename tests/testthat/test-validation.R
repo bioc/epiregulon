@@ -38,29 +38,25 @@ peak_sce_incomplete <- gene_sce
 rowRanges(peak_sce_incomplete) <- NULL
 
 test_that(".validate_input_sce thorws the error when input data is incorrect", {
-    expect_error(.validate_input_sce(expMatrix = gene_sce[,0], exp_assay = "logcounts", env = environment()),
+    expect_error(.validate_input_sce(expMatrix = gene_sce[,0], exp_assay = "logcounts"),
                  "SingleCellExperiment with no data")
     expect_error(.validate_input_sce(expMatrix = gene_sce, exp_assay = "logcounts",
-                                     peakMatrix = peak_sce[0,], peak_assay = "counts",
-                                     env = environment()),
+                                     peakMatrix = peak_sce[0,], peak_assay = "counts"),
                  "peakMatrix with no data")
     expect_error(.validate_input_sce(expMatrix = gene_sce, exp_assay = "logcounts",
-                                     peakMatrix = peak_sce, peak_assay = "no_such_assay",
-                                     env = environment()))
+                                     peakMatrix = peak_sce, peak_assay = "no_such_assay"))
     expect_error(.validate_input_sce(expMatrix = gene_sce, exp_assay = "no_such_assay",
-                                     peakMatrix = peak_sce, peak_assay = "counts",
-                                     env = environment()))
+                                     peakMatrix = peak_sce, peak_assay = "counts"))
     expect_error(.validate_input_sce(expMatrix = gene_sce[,sample(ncol(gene_sce), ncol(gene_sce)-5)], exp_assay = "logcounts",
-                                     peakMatrix = peak_sce, peak_assay = "counts",
-                                     env = environment()))
+                                     peakMatrix = peak_sce, peak_assay = "counts"))
     expect_error(.validate_input_sce(expMatrix = gene_sce_incomplete,
                                      exp_assay = "logcounts",
                                      peakMatrix = peak_sce, peak_assay = "counts",
-                                     row.ranges = TRUE, env = environment()))
+                                     row.ranges = TRUE))
     expect_error(.validate_input_sce(expMatrix = gene_sce,
                                      exp_assay = "logcounts",
                                      peakMatrix = peak_sce_incomplete, peak_assay = "counts",
-                                     row.ranges = TRUE, env = environment()))
+                                     row.ranges = TRUE))
 })
 
 
