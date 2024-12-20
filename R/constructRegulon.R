@@ -8,7 +8,7 @@
 #' Providing source name without suffix tells the function to return data merged from different tissues and samples.
 #' @param metadata logical flag specifying whether to return data or metadata only
 #' @param mode a string indicating whether to download a GRangelist of TF binding sites ('occupancy') or motif matches ('motif').
-#' TF binding information is retrieved from  [scMultiome::tfBinding]. The
+#' TF binding information is retrieved from [scMultiome::tfBinding()]. The
 #' motif information was obtained from [chromVARmotifs](https://github.com/GreenleafLab/chromVARmotifs) (human_pwms_v2 and mouse_pwms_v2,
 #' version 0.2 with filtering of cisBP motifs) and is also hosted on scMultiome.
 #' @param peaks A GRanges object indicating the peaks to perform motif annotation on.
@@ -42,8 +42,10 @@ getTFMotifInfo <- function(genome = c("hg38", "hg19", "mm10"),
 
 
     if (mode == "occupancy") {
-      grl <- scMultiome::tfBinding(genome,
-                                   source, metadata)
+      grl <- scMultiome::tfBinding(genome=genome,
+                                   source=source,
+                                   metadata=metadata,
+                                   version = 1)
     } else {
         checkmate::assert_class(peaks, "GRanges")
         species <- switch(genome, hg38 = "human",
