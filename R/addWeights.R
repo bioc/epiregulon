@@ -102,7 +102,10 @@ addWeights <- function(regulon,
     checkmate::assert_logical(tf_re.merge, len = 1)
     .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay, tf_re.merge)
 
-    if(!is.null(clusters)) .validate_clusters(clusters, expMatrix)
+    if(!is.null(clusters)) {
+        .validate_clusters(clusters, expMatrix)
+        clusters <- as.vector(clusters)
+        }
 
     checkmate::testMultiClass(regulon, c("data.frame", "DFrame"))
 

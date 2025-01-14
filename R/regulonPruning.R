@@ -117,7 +117,10 @@ pruneRegulon <- function(regulon,
                          BPPARAM = BiocParallel::SerialParam(progressbar = TRUE)) {
     if(is.null(peakMatrix)) stop("peakMatrix should be provided")
     .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay)
-    if(!is.null(clusters)) .validate_clusters(clusters, expMatrix)
+    if(!is.null(clusters)) {
+        .validate_clusters(clusters, expMatrix)
+        clusters <- as.vector(clusters)
+    }
     # choose test method
     test <- match.arg(test)
     if(test=="chi.sq" && any(duplicated(rownames(expMatrix)))) stop("Gene names provided in 'expMatrix' are not unique.")

@@ -145,6 +145,7 @@ aggregateAcrossCellsFast <- function(sce, clusters, assay.name="counts", fun_nam
                                      num.threads=1, aggregateColData = TRUE) {
   .validate_input_sce(expMatrix=sce, exp_assay=assay.name)
   .validate_clusters(clusters, sce)
+  clusters <- as.vector(clusters)
   fun_name <- match.arg(fun_name, several.ok = FALSE)
   # aggregate counts in assay
   if(!is.null(assay.name)) x <- setNames(assays(sce)[assay.name], assay.name)
