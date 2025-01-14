@@ -171,7 +171,7 @@ activity_matrix.norm5 <- calculateActivity(sce,
                                            FUN = "mean")
 test_that("calculateActivity works correctly with clusters", {
   expect_equal(activity_matrix.norm5,
-               activity_matrix.norm3[Matrix:::rowSums(activity_matrix.norm3)!=0,])
+               as.matrix(activity_matrix.norm3[Matrix:::rowSums(activity_matrix.norm3)!=0,]))
 })
 
 

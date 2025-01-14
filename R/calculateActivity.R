@@ -100,7 +100,14 @@ calculateActivity <- function(expMatrix = NULL, exp_assay = "logcounts", regulon
     if (!is.null(regulon) && !mode %in% colnames(regulon))
         stop("No such column in the regulon: ", mode)
     .validate_input_sce(expMatrix, exp_assay)
-    if(!is.null(clusters)) .validate_clusters(clusters, expMatrix)
+    if(!is.null(clusters)) {
+        .validate_clusters(clusters, expMatrix)
+        clusters <- as.vector(clusters)
+        if(!all(clusters %in% colnames(regulon[,mode])))
+            stop(paste(strwrap(sprintf("Each unique cluster should correspond to a separate column in
+                                       the %s matrix. It seems that addWeights function was run without
+                                       clusters argument or with 'corr' method.", mode)), collapse ="\n"))
+    }
     method <- tolower(method)
     method <- match.arg(method)
     FUN <- match.arg(FUN)
@@ -193,7 +200,6 @@ calculateActivity <- function(expMatrix = NULL, exp_assay = "logcounts", regulon
             score.combine <- normalizeByFrequency(score.combine, freq)
 
         } else if (!is.null(clusters)) {
-
             # Calculate the number of targets per cluster
             # freq is a table of tf x clusters and the elements represent the number of targets per tf
             freq <- initiateMatCluster(clusters, nrow = length(unique(regulon$tf)),
@@ -207,7 +213,6 @@ calculateActivity <- function(expMatrix = NULL, exp_assay = "logcounts", regulon
             score.combine <- matrix(0, nrow = ncol(expMatrix), ncol = length(unique(regulon$tf)))
             rownames(score.combine) <- colnames(expMatrix)
             colnames(score.combine) <- colnames(tf_target_mat[[1]])
-            score.combine <- as(score.combine, "CsparseMatrix")
 
             message("calculating activity scores...")
             score.combine <- calculateScore(expMatrix, tf_target_mat, clusters = clusters,
@@ -326,8 +331,8 @@ calculateScore <- function(expMatrix, tf_target_mat, clusters = NULL,
         for (cluster in sort(unique(clusters))) {
             expr_data <- expMatrix[rownames(tf_target_mat[[cluster]]),
                 clusters == cluster, drop = FALSE]
-            score.combine[clusters == cluster, ] <- Matrix::t(expr_data) %*%
-                tf_target_mat[[cluster]]
+            score.combine[clusters == cluster, ] <- as.matrix(Matrix::t(expr_data) %*%
+                tf_target_mat[[cluster]])
         }
     }
     score.combine
