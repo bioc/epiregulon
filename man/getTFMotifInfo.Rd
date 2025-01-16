@@ -9,7 +9,8 @@ getTFMotifInfo(
   source = c("atlas", "cistrome", "encode.sample", "atlas.sample", "atlas.tissue"),
   metadata = FALSE,
   mode = c("occupancy", "motif"),
-  peaks = NULL
+  peaks = NULL,
+  version = 1
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ version 0.2 with filtering of cisBP motifs) and is also hosted on scMultiome.}
 
 \item{peaks}{A GRanges object indicating the peaks to perform motif annotation on.
 The peak indices should match the \code{idxATAC} column in the regulon.}
+
+\item{version}{numeric indicating data version (for details see \link[scMultiome]{tfBinding})}
 }
 \value{
 A list of TF binding sites as a \code{GrangesList} object.

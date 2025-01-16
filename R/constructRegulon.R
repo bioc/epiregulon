@@ -13,6 +13,7 @@
 #' version 0.2 with filtering of cisBP motifs) and is also hosted on scMultiome.
 #' @param peaks A GRanges object indicating the peaks to perform motif annotation on.
 #' The peak indices should match the `idxATAC` column in the regulon.
+#' @param version numeric indicating data version (for details see \link[scMultiome]{tfBinding})
 
 #' @inherit scMultiome::tfBinding return references
 #' @examples
@@ -35,35 +36,50 @@ getTFMotifInfo <- function(genome = c("hg38", "hg19", "mm10"),
                            source = c("atlas", "cistrome", "encode.sample", "atlas.sample","atlas.tissue"),
                            metadata = FALSE,
                            mode = c("occupancy", "motif"),
-                           peaks = NULL) {
+                           peaks = NULL,
+                           version = 1) {
     genome <- match.arg(genome)
     source <- match.arg(source)
     mode <- match.arg(mode)
 
 
     if (mode == "occupancy") {
-      grl <- scMultiome::tfBinding(genome=genome,
-                                   source=source,
-                                   metadata=metadata,
-                                   version = 1)
+        if("version" %in% names(formals(scMultiome::tfBinding))){
+            grl <- scMultiome::tfBinding(genome=genome,
+                                         source=source,
+                                         metadata=metadata,
+                                         version = version)
+        }
+        else{
+            if(version!=1) {
+                stop(paste(strwrap("Only version 1 of  the chip-seq data is
+                available from the current installation of scMultime package. To
+                     access version 2, please install scMultiome version 1.7.1
+                                   or greater."),collapse = "\n"))
+            }
+            grl <- scMultiome::tfBinding(genome=genome,
+                                         source=source,
+                                         metadata=metadata)
+        }
+
     } else {
         checkmate::assert_class(peaks, "GRanges")
         species <- switch(genome, hg38 = "human",
-            hg19 = "human", mm10 = "mouse")
+                          hg19 = "human", mm10 = "mouse")
         BS.genome <- switch(genome,
-            hg38 = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
-            hg19 = BSgenome.Hsapiens.UCSC.hg19::BSgenome.Hsapiens.UCSC.hg19,
-            mm10 = BSgenome.Mmusculus.UCSC.mm10::BSgenome.Mmusculus.UCSC.mm10)
+                            hg38 = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
+                            hg19 = BSgenome.Hsapiens.UCSC.hg19::BSgenome.Hsapiens.UCSC.hg19,
+                            mm10 = BSgenome.Mmusculus.UCSC.mm10::BSgenome.Mmusculus.UCSC.mm10)
 
         message("keeping only standard chromosomes..")
         peaks <- GenomeInfoDb::keepStandardChromosomes(peaks,
-            pruning.mode = "coarse")
+                                                       pruning.mode = "coarse")
 
         message("annotating peaks with motifs")
         grl <- annotateMotif(species,
-            peaks, BS.genome, out = "positions")
+                             peaks, BS.genome, out = "positions")
         names(grl) <- lapply(strsplit(names(grl),
-            split = "_|\\."), "[", 3)
+                                      split = "_|\\."), "[", 3)
     }
     grl
 }
@@ -209,7 +225,7 @@ getRegulon <- function(p2g, overlap, aggregate = FALSE, FUN = "mean") {
     regulon_df <- S4Vectors::merge(p2g, overlap, by = "idxATAC")
 
     Correlation.rownames <- colnames(regulon_df)[grep("^Correlation\\.",
-        colnames(regulon_df))]
+                                                      colnames(regulon_df))]
     corr_matrix <- regulon_df[, Correlation.rownames, drop = FALSE]
     colnames(corr_matrix) <- gsub("^Correlation\\.", "", Correlation.rownames)
 
@@ -220,7 +236,7 @@ getRegulon <- function(p2g, overlap, aggregate = FALSE, FUN = "mean") {
     if (aggregate) {
         "aggregating regulon ..."
         regulon_df <- aggregateMatrix(regulon_df[, c("tf", "target",
-            "Correlation")], "Correlation", FUN = "mean")
+                                                     "Correlation")], "Correlation", FUN = "mean")
     }
     colnames(regulon_df)[colnames(regulon_df) == "Correlation"] <- "corr"
     return(regulon_df)
