@@ -13,6 +13,7 @@
 #' version 0.2 with filtering of cisBP motifs) and is also hosted on scMultiome.
 #' @param peaks A GRanges object indicating the peaks to perform motif annotation on.
 #' The peak indices should match the `idxATAC` column in the regulon.
+#' @param ... additional argument for scMultiome::tfBinding
 
 #' @inherit scMultiome::tfBinding return references
 #' @examples
@@ -35,7 +36,8 @@ getTFMotifInfo <- function(genome = c("hg38", "hg19", "mm10"),
                            source = c("atlas", "cistrome", "encode.sample", "atlas.sample","atlas.tissue"),
                            metadata = FALSE,
                            mode = c("occupancy", "motif"),
-                           peaks = NULL) {
+                           peaks = NULL,
+                           ...) {
     genome <- match.arg(genome)
     source <- match.arg(source)
     mode <- match.arg(mode)
@@ -44,8 +46,7 @@ getTFMotifInfo <- function(genome = c("hg38", "hg19", "mm10"),
     if (mode == "occupancy") {
       grl <- scMultiome::tfBinding(genome=genome,
                                    source=source,
-                                   metadata=metadata,
-                                   version = 1)
+                                   metadata=metadata,...)
     } else {
         checkmate::assert_class(peaks, "GRanges")
         species <- switch(genome, hg38 = "human",
