@@ -99,7 +99,7 @@ calculateActivity <- function(expMatrix = NULL, exp_assay = "logcounts", regulon
         checkmate::assertMultiClass(regulon, c("data.frame", "DFrame"))
     if (!is.null(regulon) && !mode %in% colnames(regulon))
         stop("No such column in the regulon: ", mode)
-    .validate_input_sce(expMatrix, exp_assay)
+    .validate_input_sce(SCE=expMatrix, assay_name=exp_assay)
     if(!is.null(clusters)) {
         .validate_clusters(clusters, expMatrix)
         clusters <- as.vector(clusters)

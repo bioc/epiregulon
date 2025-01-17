@@ -143,7 +143,7 @@ aggregateAcrossCells <- function(x, factors, num.threads = 1) {
 #' @export
 aggregateAcrossCellsFast <- function(sce, clusters, assay.name="counts", fun_name=c("mean", "sum"),
                                      num.threads=1, aggregateColData = TRUE) {
-  .validate_input_sce(expMatrix=sce, exp_assay=assay.name)
+  .validate_input_sce(SCE=sce, assay_name=assay.name)
   .validate_clusters(clusters, sce)
   clusters <- as.vector(clusters)
   fun_name <- match.arg(fun_name, several.ok = FALSE)

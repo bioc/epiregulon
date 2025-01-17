@@ -84,8 +84,11 @@ calculateP2G <- function(peakMatrix = NULL,
 
     cor_method <- match.arg(cor_method)
     assignment_method <- match.arg(assignment_method)
-    .validate_input_sce(expMatrix=expMatrix, exp_assay=exp_assay, peakMatrix=peakMatrix,
-                        peak_assay=peak_assay, row.ranges=TRUE)
+    .validate_input_sce(SCE=expMatrix, assay_name=exp_assay, row.ranges=TRUE)
+    .validate_input_sce(SCE=peakMatrix, assay_name=peak_assay, row.ranges=TRUE)
+    if (!identical(colnames(expMatrix), colnames(peakMatrix))){
+        stop("Cell names in expMatrix and peakMatrix should be identical")
+    }
     if(is.null(reducedDim)) stop("reducedDim argument is NULL.")
     if(!is.null(clusters)) {
         .validate_clusters(clusters, expMatrix)

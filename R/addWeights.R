@@ -100,7 +100,13 @@ addWeights <- function(regulon,
     method <- match.arg(method)
     message("adding weights using ", method, "...")
     checkmate::assert_logical(tf_re.merge, len = 1)
-    .validate_input_sce(expMatrix, exp_assay, peakMatrix, peak_assay, tf_re.merge)
+    .validate_input_sce(SCE=expMatrix, assay_name=exp_assay)
+    if(tf_re.merge){
+        .validate_input_sce(SCE=peakMatrix, assay_name=peak_assay)
+        if (!identical(colnames(expMatrix), colnames(peakMatrix))){
+            stop("Cell names in expMatrix and peakMatrix should be identical")
+        }
+    }
 
     if(!is.null(clusters)) {
         .validate_clusters(clusters, expMatrix)
@@ -242,7 +248,7 @@ addWeights <- function(regulon,
         # set z-score to zero if the size of the of the groups is equal to 0
         stats[n1 == 0 | n2 == 0 | sigma == 0] <- 0
         stats[, reg.order] <- stats
-        
+
         regulon$weight[,] <- t(stats)
 
         # Calculate effect size

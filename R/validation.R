@@ -25,25 +25,21 @@
                       c("increasing", "decreasing")[(prop < 1e-04) + 1]))
   }
 }
-#' @importFrom SummarizedExperiment assay<-
 
-.validate_input_sce <- function(expMatrix, exp_assay, peakMatrix=NULL, peak_assay=NULL, tf_re.merge=FALSE, row.ranges=FALSE){
-    checkmate::assert_class(expMatrix, "SingleCellExperiment")
-    stopifnot(exp_assay %in% names(assays(expMatrix)))
-    if (any(dim(expMatrix) == 0)) stop("SingleCellExperiment with no data")
-    if(tf_re.merge | !is.null(peakMatrix)){
-        checkmate::assert_class(peakMatrix, "SingleCellExperiment")
-        stopifnot(peak_assay %in% names(assays(peakMatrix)))
-        stopifnot(ncol(peakMatrix) == ncol(expMatrix))
-        if(nrow(peakMatrix)==0) stop("peakMatrix with no data")
+.validate_input_sce <- function(SCE, assay_name, row.ranges=FALSE){
+    checkmate::assert_multi_class(SCE, c("SingleCellExperiment", "RangedSummarizedExperiment"))
+    stopifnot(assay_name %in% names(assays(SCE)))
+    data_object_name <- as.character(substitute(SCE))
+    if (any(dim(SCE) == 0)){
+        stop(sprintf("%s with no data", data_object_name))
     }
     if(row.ranges){
-        if (length(rowRanges(peakMatrix)) == 0) {
-            stop("peakMatrix should contain non-empty rowRanges")
+        if (length(rowRanges(SCE)) == 0) {
+            stop(sprintf("%s should contain non-empty rowRanges", data_object_name))
         }
-        checkmate::assert_class(rowRanges(peakMatrix), "GRanges")
-        if (length(rowRanges(expMatrix)) == 0) {
-            stop("expMatrix should contain non-empty rowRanges")
+        checkmate::assert_class(rowRanges(SCE), "GRanges")
+        if (length(rowRanges(SCE)) == 0) {
+            stop(sprintf("%s should contain non-empty rowRanges", data_object_name))
         }
     }
 }
