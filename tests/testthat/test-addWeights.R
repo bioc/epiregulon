@@ -48,11 +48,12 @@ for(cluster in unique(clusters)){
   tfMatrix.c <- expMatrix[regulon$tf,selected_cells,drop = FALSE] > Matrix::rowMeans(expMatrix[regulon$tf,selected_cells,drop = FALSE])
   tf_re.c <- tfMatrix.c * peakMatrix[,selected_cells]
   for(i in 1:20){
-    if(length(unique(as.vector(tf_re.c[i,])))==1) weight_matrix[i,mat.col] <- 0
-    else
-    weight_matrix[i,mat.col] <- coin::wilcox_test(targetMatrix[i,selected_cells]~factor(tf_re.c[i,],
-                                                                          levels = c(1,0)))@statistic@teststatistic
-
+    if(length(unique(as.vector(tf_re.c[i,])))==1) {
+      weight_matrix[i,mat.col] <- 0
+    }else {
+      weight_matrix[i,mat.col] <- coin::wilcox_test(targetMatrix[i,selected_cells]~factor(tf_re.c[i,],
+                                                                                          levels = c(1,0)))@statistic@teststatistic
+    }
   }
 }
 # weights for all clusters have been divided by sqrt(n) prior to the previous test
